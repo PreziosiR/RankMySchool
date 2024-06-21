@@ -3,9 +3,9 @@
 </script>
 
 <div class="type-selection">
-    <button on:click={() => onSelectType('écoles primaire')}>Écoles Primaire</button>
-    <button on:click={() => onSelectType('collège')}>Collège</button>
-    <button on:click={() => onSelectType('lycée')}>Lycée</button>
+    <button on:click={() => onSelectType('ecole')}>Écoles Primaire</button>
+    <button on:click={() => onSelectType('college')}>Collège</button>
+    <button on:click={() => onSelectType('lycee')}>Lycée</button>
 </div>
 
 <style>

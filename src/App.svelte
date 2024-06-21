@@ -7,6 +7,7 @@
   } from "./utils.js";
   import { encodeParam, getColorForIps } from "./helpers.js";
   import TypeSelection from "./TypeSelection.svelte";
+  import { generateApiUrl } from "./router.js";
   let schoolsDataset = { results: [] };
   let filteredResults = [];
   let rentreeScolaireFilter = "";
@@ -36,40 +37,23 @@
     secteurFilter = "";
   }
   // urlEcoles = "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_ecoles_v2/records
-  // urlCollege = "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/api/explore/v2.1/catalog/datasets/fr-en-ips-colleges-ap2023/records"
-  // urlLycee = "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/api/explore/v2.1/catalog/datasets/fr-en-ips_lycees/records"
+  // urlCollege = "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips-colleges-ap2023/records"
+  // urlLycee = "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_lycees/records"
   async function fetchData() {
     searched = true;
-    let baseUrl =
-      "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_ecoles_v2/records";
-    let selectFields = [];
-    let filters = [];
-
-    // Ajouter les filtres à l'URL
-    if (rentreeScolaireFilter)
-      filters.push(encodeParam("rentree_scolaire", rentreeScolaireFilter));
-    if (academieFilter) filters.push(encodeParam("academie", academieFilter));
-    if (codeDuDepartementFilter)
-      filters.push(encodeParam("code_du_departement", codeDuDepartementFilter));
-    if (departementFilter)
-      filters.push(encodeParam("departement", departementFilter));
-    if (uaiFilter) filters.push(encodeParam("uai", uaiFilter));
-    if (codeInseeDeLaCommuneFilter)
-      filters.push(
-        encodeParam("code_insee_de_la_commune", codeInseeDeLaCommuneFilter)
-      );
-    if (nomDeLaCommuneFilter)
-      filters.push(encodeParam("nom_de_la_commune", nomDeLaCommuneFilter));
-    if (secteurFilter) filters.push(encodeParam("secteur", secteurFilter));
-
-    let url = `${baseUrl}?limit=20`;
-    if (selectFields.length > 0) {
-      url += `&select=${encodeURIComponent(selectFields.join(","))}`;
-    }
-    if (filters.length > 0) url += "&" + filters.join("&");
-
-    // Construire l'URL avec les champs sélectionnés et les filtres
-    const response = await fetch(url);
+    let filters = {
+      rentree_scolaire: rentreeScolaireFilter,
+      academie: academieFilter,
+      code_du_departement: codeDuDepartementFilter,
+      departement: departementFilter,
+      uai: uaiFilter,
+      code_insee_de_la_commune: codeInseeDeLaCommuneFilter,
+      nom_de_la_commune: nomDeLaCommuneFilter,
+      secteur: secteurFilter,
+    };
+    let baseUrl = generateApiUrl(selectedType, filters);
+    console.log("baseUrl", baseUrl);
+    const response = await fetch(baseUrl);
     schoolsDataset = await response.json();
     filteredResults = schoolsDataset.results;
   }
