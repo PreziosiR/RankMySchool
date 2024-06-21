@@ -1,47 +1,156 @@
 <script>
   let schoolsDataset = { results: [] };
   let filteredResults = [];
-  let academieFilter = '';
-  let departementFilter = '';
-  let rentreeScolaireFilter = '';
+  let rentreeScolaireFilter = "";
+  let academieFilter = "";
+  let codeDuDepartementFilter = "";
+  let departementFilter = "";
+  let uaiFilter = "";
+  let codeInseeDeLaCommuneFilter = "";
+  let nomDeLaCommuneFilter = "";
+  let secteurFilter = "";
+
+  const academies = [
+    "AIX-MARSEILLE",
+    "AMIENS",
+    "BESANCON",
+    "BORDEAUX",
+    "CAEN",
+    "CLERMONT-FERRAND",
+    "CORSE",
+    "CRETEIL",
+    "DIJON",
+    "GRENOBLE",
+    "GUADELOUPE",
+    "GUYANE",
+    "LA REUNION",
+    "LILLE",
+    "LIMOGES",
+    "LYON",
+    "MARTINIQUE",
+    "MAYOTTE",
+    "MONTPELLIER",
+    "NANCY-METZ",
+    "NANTES",
+    "NICE",
+    "NORMANDIE",
+    "ORLEANS-TOURS",
+    "PARIS",
+    "POITIERS",
+    "REIMS",
+    "RENNES",
+    "ROUEN",
+    "STRASBOURG",
+    "TOULOUSE",
+    "VERSAILLES"
+  ];
+
+  // Fonction d'assistance pour encoder les paramètres d'URL
+  function encodeParam(key, value) {
+    return `refine=${encodeURIComponent(key)}:${encodeURIComponent(value)}`;
+  }
 
   async function fetchData() {
-    const response = await fetch('https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_ecoles_v2/records?limit=20');
+    let baseUrl =
+      "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_ecoles_v2/records";
+    let selectFields = [];
+    let filters = [];
+
+    // Déterminer quels champs sélectionner en fonction des filtres renseignés
+    // if (rentreeScolaireFilter) selectFields.push("rentree_scolaire");
+    // if (academieFilter) selectFields.push("academie");
+    // if (codeDuDepartementFilter) selectFields.push("code_du_departement");
+    // if (departementFilter) selectFields.push("departement");
+    // if (uaiFilter) selectFields.push("uai");
+    // if (codeInseeDeLaCommuneFilter)
+    //   selectFields.push("code_insee_de_la_commune");
+    // if (nomDeLaCommuneFilter) selectFields.push("nom_de_la_commune");
+    // if (secteurFilter) selectFields.push("secteur");
+
+    
+    // Ajouter les filtres à l'URL
+    if (rentreeScolaireFilter)
+      filters.push(encodeParam("rentree_scolaire", rentreeScolaireFilter));
+    if (academieFilter) filters.push(encodeParam("academie", academieFilter));
+    if (codeDuDepartementFilter)
+      filters.push(encodeParam("code_du_departement", codeDuDepartementFilter));
+    if (departementFilter)
+      filters.push(encodeParam("departement", departementFilter));
+    if (uaiFilter) filters.push(encodeParam("uai", uaiFilter));
+    if (codeInseeDeLaCommuneFilter)
+      filters.push(
+          encodeParam("code_insee_de_la_commune", codeInseeDeLaCommuneFilter)
+        );
+      if (nomDeLaCommuneFilter)
+        filters.push(encodeParam("nom_de_la_commune", nomDeLaCommuneFilter));
+      if (secteurFilter) filters.push(encodeParam("secteur", secteurFilter));
+      
+      let url = `${baseUrl}?limit=20`;
+      if (selectFields.length > 0) {
+        url += `&select=${encodeURIComponent(selectFields.join(","))}`;
+      }
+      if (filters.length > 0) url += '&' + filters.join('&');
+      
+      // Construire l'URL avec les champs sélectionnés et les filtres
+    const response = await fetch(url);
     schoolsDataset = await response.json();
+    filteredResults = schoolsDataset.results;
   }
-   // Créez une réaction qui se déclenche chaque fois que schoolsDataset est mis à jour 
-  $: results = schoolsDataset.results;
-  $: filteredResults = results.filter(({ academie, code_du_departement, rentree_scolaire }) =>
-    (academie.includes(academieFilter) || academieFilter === '') &&
-    (code_du_departement.includes(departementFilter) || departementFilter === '') &&
-    (rentree_scolaire.includes(rentreeScolaireFilter) || rentreeScolaireFilter === '')
-  );
-  fetchData();
 </script>
 
 <h1>RankMySchool</h1>
 <div>
-  <input type="text" placeholder="Académie" bind:value={academieFilter}>
-  <input type="text" placeholder="Code du département" bind:value={departementFilter}>
-  <input type="text" placeholder="Rentrée scolaire" bind:value={rentreeScolaireFilter}>
+  <input
+    type="text"
+    placeholder="Rentrée scolaire"
+    bind:value={rentreeScolaireFilter}
+  />
+  <select bind:value={academieFilter}>
+    <option value="">Choisir une académie</option>
+    {#each academies as academie}
+      <option value={academie}>{academie}</option>
+    {/each}
+  </select>
+  <input
+    type="text"
+    placeholder="Code du département"
+    bind:value={codeDuDepartementFilter}
+  />
+  <input type="text" placeholder="Département" bind:value={departementFilter} />
+  <input type="text" placeholder="UAI" bind:value={uaiFilter} />
+  <input
+    type="text"
+    placeholder="Code INSEE de la commune"
+    bind:value={codeInseeDeLaCommuneFilter}
+  />
+  <input
+    type="text"
+    placeholder="Nom de la commune"
+    bind:value={nomDeLaCommuneFilter}
+  />
+  <input type="text" placeholder="Secteur" bind:value={secteurFilter} />
+  <button on:click={fetchData}>Rechercher</button>
 </div>
 <ul>
   {#each filteredResults as item, i}
     <li>
       <p>{item.rentree_scolaire}</p>
       <p>{item.academie} : {item.departement}</p>
-
-      <p>{item.nom_de_l_etablissment === "A COMPLETER" ? item.nom_de_la_commune : item.nom_de_l_etablissment} : {item.ips}</p>
+      <p>
+        {item.nom_de_l_etablissment === "A COMPLETER"
+          ? item.nom_de_la_commune
+          : item.nom_de_l_etablissment} : {item.ips}
+      </p>
     </li>
   {/each}
 </ul>
 
 <style>
   li {
-    border: 1px solid #ccc; /* Ajoute une bordure légère */
-    margin-bottom: 10px; /* Espacement de 10px entre chaque bloc */
-    padding: 5px; /* Ajoute un peu d'espace à l'intérieur de chaque bloc */
-    list-style-type: none; /* Enlève les puces */
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 5px;
+    list-style-type: none;
     border-radius: 5px;
   }
 </style>
