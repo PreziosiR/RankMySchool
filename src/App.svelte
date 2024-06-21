@@ -3,8 +3,9 @@
     academies,
     rentree_scolaire,
     secteurs,
-    encodeParam,
     departements,
+    encodeParam,
+    getColorForIps,
   } from "./utils.js";
   let schoolsDataset = { results: [] };
   let filteredResults = [];
@@ -105,7 +106,7 @@
       <p>
         {item.nom_de_l_etablissment === "A COMPLETER"
           ? item.nom_de_la_commune
-          : item.nom_de_l_etablissment} : {item.ips}
+          : item.nom_de_l_etablissment} : <span style="color: {getColorForIps(item.ips)}">{item.ips}</span>
       </p>
     </li>
   {/each}
@@ -118,5 +119,10 @@
     padding: 5px;
     list-style-type: none;
     border-radius: 5px;
+  }
+
+  .ipsValue {
+    padding: 5px;
+    color: white; /* Texte blanc pour une meilleure lisibilité */
   }
 </style>
