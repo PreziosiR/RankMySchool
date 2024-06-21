@@ -102,11 +102,12 @@
   {#each filteredResults as item, i}
     <li>
       <p>{item.rentree_scolaire}</p>
-      <p>{item.academie} : {item.departement}</p>
+      <p>UAI: {item.uai}</p>
+      <p>{item.academie} : {item.departement} ({item.code_du_departement})</p>
       <p>
         {item.nom_de_l_etablissment === "A COMPLETER"
           ? item.nom_de_la_commune
-          : item.nom_de_l_etablissment} : <span style="color: {getColorForIps(item.ips)}">{item.ips}</span>
+          : item.nom_de_l_etablissment} : <span style="color: {getColorForIps(item.ips)}">{item.ips}</span> ({item.secteur})
       </p>
     </li>
   {/each}
@@ -119,10 +120,5 @@
     padding: 5px;
     list-style-type: none;
     border-radius: 5px;
-  }
-
-  .ipsValue {
-    padding: 5px;
-    color: white; /* Texte blanc pour une meilleure lisibilité */
   }
 </style>

@@ -161,6 +161,6 @@ export function getColorForIps(ips) {
   else if (ips <= 90) return '#FF4500';
   else if (ips <= 100) return '#FFA500';
   else if (ips <= 110) return '#9ACD32';
-  else if (ips <= 120) return '#7CFC00';
-  else return '#32CD32'; // Pour 121 et plus
+  else if (ips <= 120) return '#6EBF00';
+  else return '#5E9C00'; // Pour 121 et plus
 }
